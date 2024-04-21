@@ -18,25 +18,25 @@ import { defineComponent } from "vue";
 
 import { TipoNotificacao } from "@/interfaces/INotificacao";
 
-import useNotificador from '@/hooks/notificador';
+import useNotificador from "@/hooks/notificador";
 import { ALTERAR_PROJETO, CADASTRAR_PROJETO } from "@/store/tipo-acoes";
 
 export default defineComponent({
   name: "Formulario",
   props: {
     id: {
-      type: String
-    }
+      type: String,
+    },
   },
   mounted() {
     if (this.id) {
-      const projeto = this.store.state.projetos.find(proj => proj.id == this.id)
-      this.nomeDoProjeto = projeto?.nome || ''
+      const projeto = this.store.state.projeto.projetos.find((proj) => proj.id == this.id);
+      this.nomeDoProjeto = projeto?.nome || "";
     }
   },
   data() {
     return {
-      nomeDoProjeto: ""
+      nomeDoProjeto: "",
     };
   },
   methods: {
@@ -44,26 +44,31 @@ export default defineComponent({
       if (this.id) {
         this.store.dispatch(ALTERAR_PROJETO, {
           id: this.id,
-          nome: this.nomeDoProjeto
-        }).then(() => this.lidarComSucesso('alterado'))
+          nome: this.nomeDoProjeto,
+        }).then(() => this.lidarComSucesso());
       } else {
-        this.store.dispatch(CADASTRAR_PROJETO, this.nomeDoProjeto)
-          .then(() => this.lidarComSucesso('cadastrado'))
+        this.store
+          .dispatch(CADASTRAR_PROJETO, this.nomeDoProjeto)
+          .then(() => this.lidarComSucesso());
       }
     },
-    lidarComSucesso(acao: string) {
+    lidarComSucesso() {
       this.nomeDoProjeto = "";
-      this.notificar(TipoNotificacao.SUCESSO, 'Excelente!', `O projeto foi ${acao} com sucesso!`)
-      this.$router.push('/projetos')
-    }
+      this.notificar(
+        TipoNotificacao.SUCESSO,
+        "Excelente!",
+        "O projeto foi cadastrado com sucesso!"
+      );
+      this.$router.push("/projetos");
+    },
   },
   setup() {
-    const store = useStore()
-    const { notificar } = useNotificador()
+    const store = useStore();
+    const { notificar } = useNotificador();
     return {
       store,
-      notificar
-    }
-  }
+      notificar,
+    };
+  },
 });
 </script>
