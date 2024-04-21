@@ -1,24 +1,32 @@
 import http from "@/http";
 import { INotificacao } from "@/interfaces/INotificacao";
 import IProjeto from "@/interfaces/IProjeto";
+import ITarefa from "@/interfaces/ITarefa";
 import { InjectionKey } from "vue";
 import { createStore, Store, useStore as vuexUseStore } from "vuex";
 import {
   ALTERAR_PROJETO,
+  ALTERAR_TAREFA,
   CADASTRAR_PROJETO,
+  CADASTRAR_TAREFA,
   OBTER_PROJETOS,
+  OBTER_TAREFAS,
   REMOVER_PROJETO,
 } from "./tipo-acoes";
 import {
   ADICIONA_PROJETO,
+  ADICIONA_TAREFA,
   ALTERA_PROJETO,
+  ALTERA_TAREFA,
   DEFINIR_PROJETOS,
+  DEFINIR_TAREFAS,
   EXCLUIR_PROJETO,
   NOTIFICAR,
 } from "./tipo-mutacoes";
 
 interface Estado {
   projetos: IProjeto[];
+  tarefas: ITarefa[];
   notificacoes: INotificacao[];
 }
 
@@ -27,6 +35,7 @@ export const key: InjectionKey<Store<Estado>> = Symbol();
 export const store = createStore<Estado>({
   state: {
     projetos: [],
+    tarefas: [],
     notificacoes: [],
   },
   mutations: {
@@ -57,6 +66,16 @@ export const store = createStore<Estado>({
         );
       }, 3000);
     },
+    [DEFINIR_TAREFAS](state, tarefas: ITarefa[]) {
+      state.tarefas = tarefas;
+    },
+    [ADICIONA_TAREFA](state, tarefa: ITarefa) {
+      state.tarefas.push(tarefa);
+    },
+    [ALTERA_TAREFA](state, tarefa: ITarefa) {
+      const index = state.tarefas.findIndex((t) => t.id == tarefa.id);
+      state.tarefas[index] = tarefa;
+    },
   },
   actions: {
     [OBTER_PROJETOS]({ commit }) {
@@ -76,6 +95,21 @@ export const store = createStore<Estado>({
       return http
         .delete(`/projetos/${id}`)
         .then(() => commit(EXCLUIR_PROJETO, id));
+    },
+    [OBTER_TAREFAS]({ commit }) {
+      http
+        .get("tarefas")
+        .then((resposta) => commit(DEFINIR_TAREFAS, resposta.data));
+    },
+    [CADASTRAR_TAREFA]({ commit }, tarefas: ITarefa) {
+      return http
+        .post("/tarefas", tarefas)
+        .then((resposta) => commit(ADICIONA_TAREFA, resposta.data));
+    },
+    [ALTERAR_TAREFA]({ commit }, tarefa: ITarefa) {
+      return http
+        .put(`/tarefas/${tarefa.id}`, tarefa)
+        .then(() => commit(ALTERA_TAREFA, tarefa));
     },
   },
 });
