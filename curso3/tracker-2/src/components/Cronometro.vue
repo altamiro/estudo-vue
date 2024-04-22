@@ -1,6 +1,6 @@
 <template>
   <section>
-    <i class="far fa-clock"></i> {{tempoDecorrido}}
+    <i class="far fa-clock"></i> {{ tempoDecorrido }}
   </section>
 </template>
 
@@ -16,7 +16,7 @@ export default defineComponent({
     },
   },
   computed: {
-    tempoDecorrido () : string {
+    tempoDecorrido(): string {
       return new Date(this.tempoEmSegundos * 1000)
         .toISOString()
         .substr(11, 8)
@@ -24,6 +24,4 @@ export default defineComponent({
   }
 });
 </script>
-<style>
-
-</style>
+<style></style>
